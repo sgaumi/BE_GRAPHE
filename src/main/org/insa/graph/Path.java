@@ -30,19 +30,29 @@ public class Path {
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
      * 
-     * @deprecated Need to be implemented.
      */
     public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
         
-        List<Arc> successors = new ArrayList<Arc>();
-        Node node_mtn;
+        Arc fastestarc=nodes.get(0).getSuccessors().get(0);
+        boolean test=true;
         Node node_prec=nodes.get(0);
         for (Node n : nodes) {
-        	node_mtn=n;
-        	if (node_mtn!=node_prec) {
-        		
+        	if (n!=node_prec) {
+        		for(Arc a: node_prec.getSuccessors()) {
+        			if(a.getDestination()==n) {
+	        			if (test) {fastestarc=a;test=false;}
+	        			else {
+	        				if(a.getMinimumTravelTime()<fastestarc.getMinimumTravelTime())fastestarc=a;
+	        			}
+        			}
+        		}
+        		if (test) {
+        			throw(new IllegalArgumentException());
+        		}
+        		arcs.add(fastestarc);
+        		test=true;
         	}
         	node_prec=n;
         }
@@ -63,12 +73,38 @@ public class Path {
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
      * 
-     * @deprecated Need to be implemented.
      */
     public static Path createShortestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
+
+        //Initialisation
+        Node node_prec = null;
+        int i = 0;
+        
+        for(Node n: nodes) {
+        	//Ignorer la premire étape
+        	if(i == 0) {
+        		node_prec = nodes.get(i);
+        		continue;
+        	}
+        	// Préparer la recherche d'un arc
+        	Arc shortestArc = null;
+        	for(Arc a: node_prec.getSuccessors()) {
+        		//Passer à l'arc suivant s'il n'a pas la bonne destination
+        		if(a.getDestination() != n) {
+        			continue;
+        		}
+        		if(shortestArc == null || a.getLength() < shortestArc.getLength()) {
+            		shortestArc = a;
+        		}
+        	}
+        	//Préparer le tour suivant
+        	node_prec = nodes.get(i);
+        	arcs.add(shortestArc);
+        	i++;
+        }
+        
         return new Path(graph, arcs);
     }
 
