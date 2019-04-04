@@ -240,6 +240,7 @@ public class Path {
      * 
      * @return Time (in seconds) required to travel this path at the given speed (in
      *         kilometers-per-hour).
+
      */
     public double getTravelTime(double speed) {
     	double temps = 0;
@@ -254,12 +255,13 @@ public class Path {
      * on every arc.
      * 
      * @return Minimum travel time to travel this path (in seconds).
-     * 
-     * @deprecated Need to be implemented.
      */
     public double getMinimumTravelTime() {
-        // TODO:
-        return 0;
+       	double temps = 0;
+        for(Arc a: this.arcs) {
+        	temps += a.getMinimumTravelTime();
+        }
+        return temps;
     }
 
 }
