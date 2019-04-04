@@ -35,7 +35,19 @@ public class Path {
     public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
+        
+        List<Arc> successors = new ArrayList<Arc>();
+        Node node_mtn;
+        Node node_prec=nodes.get(0);
+        for (Node n : nodes) {
+        	node_mtn=n;
+        	if (node_mtn!=node_prec) {
+        		
+        	}
+        	node_prec=n;
+        }
+        
+        
         return new Path(graph, arcs);
     }
 
@@ -240,7 +252,6 @@ public class Path {
      * 
      * @return Time (in seconds) required to travel this path at the given speed (in
      *         kilometers-per-hour).
-
      */
     public double getTravelTime(double speed) {
     	double temps = 0;
