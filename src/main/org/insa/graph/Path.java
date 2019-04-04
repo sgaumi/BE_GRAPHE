@@ -35,7 +35,9 @@ public class Path {
     public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
+        //TODO:
+        
+        
         return new Path(graph, arcs);
     }
 
@@ -56,7 +58,34 @@ public class Path {
     public static Path createShortestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
+
+        //Initialisation
+        Node node_prec = null;
+        int i = 0;
+        
+        for(Node n: nodes) {
+        	//Ignorer la premire étape
+        	if(i == 0) {
+        		node_prec = nodes.get(i);
+        		continue;
+        	}
+        	// Préparer la recherche d'un arc
+        	Arc shortestArc = null;
+        	for(Arc a: node_prec.getSuccessors()) {
+        		//Passer à l'arc suivant s'il n'a pas la bonne destination
+        		if(a.getDestination() != n) {
+        			continue;
+        		}
+        		if(shortestArc == null || a.getLength() < shortestArc.getLength()) {
+            		shortestArc = a;
+        		}
+        	}
+        	//Préparer le tour suivant
+        	node_prec = nodes.get(i);
+        	arcs.add(shortestArc);
+        	i++;
+        }
+        
         return new Path(graph, arcs);
     }
 
