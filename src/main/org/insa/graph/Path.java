@@ -225,13 +225,27 @@ public class Path {
      * second one.</li>
      * </ul>
      * 
-     * @return true if the path is valid, false otherwise.
-     * 
-     * @deprecated Need to be implemented.
+     * @return true if the path is valid, false otherwise..
      */
     public boolean isValid() {
-        // TODO:
-        return false;
+    	boolean test=false;
+        
+        int real_way=0;
+        Node node_prec=this.getOrigin();
+        Node node_mtn;
+        for (Arc a: this.arcs) {
+        	node_mtn=a.getOrigin();
+        	if (node_mtn!=node_prec) {
+        		real_way++;
+        	}
+        	node_prec=a.getDestination();
+        }
+        
+        if (real_way==0 || this.isEmpty() || this.size()==1) {
+        	test=true;
+        }
+        
+        return test;
     }
 
     /**
@@ -255,7 +269,7 @@ public class Path {
      * 
      * @return Time (in seconds) required to travel this path at the given speed (in
      *         kilometers-per-hour).
-     * 
+
      */
     public double getTravelTime(double speed) {
     	double temps = 0;
