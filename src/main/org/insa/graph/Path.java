@@ -82,8 +82,12 @@ public class Path {
         	}
         	//Préparer le tour suivant
         	node_prec = nodes.get(i);
-        	arcs.add(shortestArc);
-        	i++;
+        	if(shortestArc != null) {
+            	arcs.add(shortestArc);
+            	i++;
+        	}else {
+        		throw(new IllegalArgumentException());
+        	}
         }
         
         return new Path(graph, arcs);
