@@ -46,8 +46,8 @@ public class Launch {
     public static void main(String[] args) throws Exception {
 
         // Visit these directory to see the list of available files on Commetud.
-        String mapName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr";
-        String pathName = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Paths/path_fr31insa_rangueil_r2.path";
+        String mapName = "/home/corentin/Documents/Travail/3IR/BE Graphe/commetud/insa.mapgr";
+        String pathName = "/home/corentin/Documents/Travail/3IR/BE Graphe/commetud/path_fr31insa_rangueil_r2.path";
 
         // Create a graph reader.
         GraphReader reader = new BinaryGraphReader(
@@ -60,15 +60,15 @@ public class Launch {
         Drawing drawing = createDrawing();
 
         // TODO: Draw the graph on the drawing.
-
+        drawing.drawGraph(graph);
         // TODO: Create a PathReader.
-        PathReader pathReader = null;
+        PathReader pathReader = new PathReader();
 
         // TODO: Read the path.
-        Path path = null;
+        Path path = pathReader.readPath(graph);
 
         // TODO: Draw the path.
-
+        drawing.drawPath(path);
     }
 
 }
