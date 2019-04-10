@@ -30,12 +30,32 @@ public class Path {
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
      * 
-     * @deprecated Need to be implemented.
      */
     public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
-        //TODO:
+        
+        Arc fastestarc=nodes.get(0).getSuccessors().get(0);
+        boolean test=true;
+        Node node_prec=nodes.get(0);
+        for (Node n : nodes) {
+        	if (n!=node_prec) {
+        		for(Arc a: node_prec.getSuccessors()) {
+        			if(a.getDestination()==n) {
+	        			if (test) {fastestarc=a;test=false;}
+	        			else {
+	        				if(a.getMinimumTravelTime()<fastestarc.getMinimumTravelTime())fastestarc=a;
+	        			}
+        			}
+        		}
+        		if (test) {
+        			throw(new IllegalArgumentException());
+        		}
+        		arcs.add(fastestarc);
+        		test=true;
+        	}
+        	node_prec=n;
+        }
         
         
         return new Path(graph, arcs);
@@ -53,7 +73,6 @@ public class Path {
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
      * 
-     * @deprecated Need to be implemented.
      */
     public static Path createShortestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
@@ -273,7 +292,6 @@ public class Path {
      * 
      * @return Time (in seconds) required to travel this path at the given speed (in
      *         kilometers-per-hour).
-
      */
     public double getTravelTime(double speed) {
     	double temps = 0;
