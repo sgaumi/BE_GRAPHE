@@ -35,27 +35,44 @@ public class Path {
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
         
-        Arc fastestarc=nodes.get(0).getSuccessors().get(0);
-        boolean test=true;
-        Node node_prec=nodes.get(0);
-        for (Node n : nodes) {
-        	if (n!=node_prec) {
-        		for(Arc a: node_prec.getSuccessors()) {
-        			if(a.getDestination()==n) {
-	        			if (test) {fastestarc=a;test=false;}
-	        			else {
-	        				if(a.getMinimumTravelTime()<fastestarc.getMinimumTravelTime())fastestarc=a;
-	        			}
-        			}
-        		}
-        		if (test) {
-        			throw(new IllegalArgumentException());
-        		}
-        		arcs.add(fastestarc);
-        		test=true;
-        	}
-        	node_prec=n;
+        Arc fastestarc=null;
+        
+        if (nodes.size()!=0) {
+        	fastestarc=nodes.get(0).getSuccessors().get(0);
         }
+        
+        
+        boolean test=true;
+        
+        
+        if (nodes.size()!=0 && nodes.size()!=1) {
+        	Node node_prec=nodes.get(0);
+	        for (Node n : nodes) {
+	        	if (n!=node_prec) {
+	        		for(Arc a: node_prec.getSuccessors()) {
+	        			if(a.getDestination()==n) {
+		        			if (test) {fastestarc=a;test=false;}
+		        			else {
+		        				if(a.getMinimumTravelTime()<fastestarc.getMinimumTravelTime())fastestarc=a;
+		        			}
+	        			}
+	        		}
+	        		if (test) {
+	        			throw(new IllegalArgumentException());
+	        		}
+	        		arcs.add(fastestarc);
+	        		test=true;
+	        	}
+	        	node_prec=n;
+	        }
+        }
+    	if (nodes.size()==1) {
+    		return new Path(graph, nodes.get(0));
+    	}
+    	if (nodes.size()==0) {
+    		return new Path(graph);
+    	}
+  
         
         
         return new Path(graph, arcs);
