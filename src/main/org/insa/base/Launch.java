@@ -50,6 +50,11 @@ public class Launch {
         String mapName = "/home/gaumart/Bureau/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr";
         String pathName = "/home/gaumart/Bureau/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Paths/path_fr31insa_rangueil_r2.path";
 
+        /*
+        String mapName = "/home/corentin/Documents/Travail/3IR/BE Graphe/commetud/insa.mapgr";
+        String pathName = "/home/corentin/Documents/Travail/3IR/BE Graphe/commetud/path_fr31insa_rangueil_insa.path";
+         */
+        
         // Create a graph reader.
         GraphReader reader = new BinaryGraphReader(
                 new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
