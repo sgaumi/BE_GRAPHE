@@ -77,38 +77,53 @@ public class Path {
     public static Path createShortestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
-
+       // System.out.println("\n/////////\nsize: "+nodes.size());
         //Initialisation
         Node node_prec = null;
         int i = 0;
+
         
-        for(Node n: nodes) {
-        	//Ignorer la premire étape
-        	if(i == 0) {
-        		node_prec = nodes.get(i);
-        		continue;
-        	}
-        	// Préparer la recherche d'un arc
-        	Arc shortestArc = null;
-        	for(Arc a: node_prec.getSuccessors()) {
-        		//Passer à l'arc suivant s'il n'a pas la bonne destination
-        		if(a.getDestination() != n) {
-        			continue;
-        		}
-        		if(shortestArc == null || a.getLength() < shortestArc.getLength()) {
-            		shortestArc = a;
-        		}
-        	}
-        	//Préparer le tour suivant
-        	node_prec = nodes.get(i);
-        	if(shortestArc != null) {
-            	arcs.add(shortestArc);
-            	i++;
-        	}else {
-        		throw(new IllegalArgumentException());
-        	}
+        if(nodes.size() == 0) {
+        	return new Path(graph);
+        }
+        //Cas d'un chemin d'un nœud
+        if(nodes.size() == 1) {
+        	return new Path(graph,nodes.get(0));
         }
         
+        //Cas d'un chemin de plus d'un nœud
+        for(Node n: nodes) {
+        	//System.out.print("passage");
+        	//Ignorer la première étape
+        	if(i == 0) {
+        		node_prec = nodes.get(i);
+        	}else {
+	        	// Préparer la recherche d'un arc
+	        	Arc shortestArc = null;
+	        	for(Arc a: node_prec.getSuccessors()) {
+	        		
+	        		//Passer à l'arc suivant s'il n'a pas la bonne destination
+	        		if(a.getDestination() != n) {
+	        			continue;
+	        		}
+	        		if(shortestArc == null || a.getLength() < shortestArc.getLength()) {
+	            		shortestArc = a;
+	        		}
+	        		//System.out.println("2eboucle");
+	        	}
+	        	//Préparer le tour suivant
+	        	node_prec = nodes.get(i);
+	        	
+	        	if(shortestArc != null && shortestArc.getOrigin() != null) {
+	            	arcs.add(shortestArc);
+	            	System.out.println("Ajout!\n");
+	        	}else {
+	        		throw(new IllegalArgumentException());
+	        	}
+        	}
+        	i++;
+        }
+        //System.out.println("\n/////////\nsize: "+arcs.size());
         return new Path(graph, arcs);
     }
 
@@ -173,6 +188,7 @@ public class Path {
      * @param node Single node of the path.
      */
     public Path(Graph graph, Node node) {
+    	System.out.println("Nouveau Path "+node);
         this.graph = graph;
         this.origin = node;
         this.arcs = new ArrayList<>();
