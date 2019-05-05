@@ -21,16 +21,25 @@ public class Label {
 		this.marque = true;
 	}
 	
+	public boolean isMarked() {
+		return this.marque;
+	}
+	
 	public void setFather(Arc a) {
 		this.pere = a;
 	}
 	
-	public void setCost(int cost) {
-		if( cost < this.cout) {
-			this.cout = cost;
-		}else {
-			
-		}
+	public void setCost(double cost) {
+		this.cout = cost;
+	}
+
+	public double getCost() {
+		return this.cout;
+	}
+
+	public Arc getFather() {
+		// TODO Auto-generated method stub
+		return this.pere;
 	}
 	
 }
