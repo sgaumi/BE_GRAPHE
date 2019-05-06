@@ -25,6 +25,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
 
     // The heap array.
     private final ArrayList<E> array;
+    
 
     /**
      * Construct a new empty binary heap.
@@ -142,25 +143,57 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
         this.percolateUp(index);
     }
 
-    @Override
+    /*@Override
     public void remove(E x) throws ElementNotFoundException {
     	int index;
 
     	if (!isEmpty()) {
     		index=this.array.indexOf(x);
-    		if (index==-1) {
+    		if (index==-1 || index>=this.currentSize) {
     			throw new ElementNotFoundException(x);
     		}
     		else {
-    			E lastItem = this.array.get(--this.currentSize);
-    			this.arraySet(index, lastItem);
-    			this.percolateDown(index);
+    			if (index<this.currentSize-1) {
+	    			E lastItem = this.array.get(--this.currentSize);
+	    			this.arraySet(index, lastItem);
+	    			this.percolateDown(index);
+	    			this.percolateUp(index);
+    			}
+    			if (index==this.currentSize-1) {
+    				this.currentSize--;
+    			}
     			
     		}
     	}
     	
     	else {
     		throw new ElementNotFoundException(x);		
+    	}
+    	
+    	
+    }*/
+    
+    @Override
+    public void remove(E x) throws ElementNotFoundException {
+    	int index;
+
+    	if (isEmpty()) {
+    		throw new ElementNotFoundException(x);
+    	}
+    	index=this.array.indexOf(x);
+    	if (index >= this.currentSize || index==-1 ) {
+    		throw new ElementNotFoundException(x);
+    	}
+    	else {
+    		if (index<this.currentSize-1) {
+    			E lastItem = this.array.get(--this.currentSize);
+    			this.arraySet(index, lastItem);
+    			this.percolateDown(index);
+    			this.percolateUp(index);
+    		}
+    		else if(index==this.currentSize-1) {
+    			this.currentSize--;
+    		}
     	}
     	
     	
