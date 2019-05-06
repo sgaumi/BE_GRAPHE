@@ -26,14 +26,18 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         
         //Initialization
         Label[] nodeLabels = new Label[nbNodes];
+        for(int i = 0; i < nbNodes; i++) {
+        	nodeLabels[i] = new Label(i);
+        }
         
         // Initialize the first node
-        nodeLabels[0].setCost(0);
-        nodeLabels[0].setFather(null);
-        nodeLabels[0].setMarked();
+        Node currentNode = data.getOrigin();
+        nodeLabels[currentNode.getId()].setCost(0);
+        nodeLabels[currentNode.getId()].setFather(null);
+        nodeLabels[currentNode.getId()].setMarked();
         notifyNodeMarked(data.getOrigin());
         
-        Node currentNode = data.getOrigin();
+        
         Node nextNode = null;
         // Continue loop while the destination isn't reached
         while(!nodeLabels[data.getDestination().getId()].isMarked()) {	
@@ -41,7 +45,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         		//Calculate the cost
         		int id = a.getDestination().getId();
         		double cost = nodeLabels[currentNode.getId()].getCost() + a.getMinimumTravelTime();
-        		
+        		System.out.println(cost);
         		
         		//Test if it's going to be better to choose this path
         		if( nodeLabels[id].getCost() > cost) {
@@ -52,6 +56,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         			//Set the code and the father
         			nodeLabels[id].setCost(cost);
         			nodeLabels[id].setFather(a);
+        			
+        			System.out.println(id+": cout"+nodeLabels[id].getCost());
         		}
         	}
         	
@@ -71,6 +77,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             	
             	currentNode = nextNode;
           	}else {
+          		System.out.println("Problème de gestion du noeud suivant");
         		return new ShortestPathSolution(data, Status.INFEASIBLE);
         	}
         	
