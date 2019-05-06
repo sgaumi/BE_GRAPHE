@@ -2,11 +2,12 @@ package org.insa.algo.shortestpath;
 
 
 import org.insa.graph.Arc;
+import org.insa.graph.Node;
 
-public class Label {
+public class Label implements Comparable<Label> {
 	
 	@SuppressWarnings("unused")
-	private int sommet_courant;
+	private Node sommet_courant;
 	
 	private boolean marque = false;
 	
@@ -14,16 +15,16 @@ public class Label {
 	
 	private Arc pere;
 	
-	public Label(int n) {
-		this.sommet_courant = n;
-	}
-	
-	public void setMarked() {
-		this.marque = true;
+	public Label(Node node) {
+		this.sommet_courant = node;
 	}
 	
 	public boolean isMarked() {
 		return this.marque;
+	}
+	
+	public void setMarked() {
+		this.marque = true;
 	}
 	
 	public void setFather(Arc a) {
@@ -46,4 +47,9 @@ public class Label {
     public int compareTo(Label other) {
         return Double.compare(this.cout, other.cout);
     }
+
+	public Node getNode() {
+		// TODO Auto-generated method stub
+		return this.sommet_courant;
+	}
 }

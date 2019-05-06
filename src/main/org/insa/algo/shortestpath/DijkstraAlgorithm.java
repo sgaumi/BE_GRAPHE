@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.insa.algo.AbstractSolution.Status;
+import org.insa.algo.utils.BinaryHeap;
+import org.insa.algo.utils.PriorityQueue;
 import org.insa.graph.Arc;
 import org.insa.graph.Graph;
 import org.insa.graph.Node;
@@ -26,27 +28,51 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         
         //Initialization
         Label[] nodeLabels = new Label[nbNodes];
+        
+        BinaryHeap heap = new BinaryHeap();
+        Label destination = null;
+        System.out.println("Initialisation...");
         for(int i = 0; i < nbNodes; i++) {
-        	nodeLabels[i] = new Label(i);
+        	Label l = new Label(data.getGraph().getNodes().get(i));
+        	nodeLabels[i] = l;
+        	// Initialize the first node
+        	if( i == data.getOrigin().getId() ) {
+        		l.setCost(0);
+        	}
+        	if(i == data.getDestination().getId()){
+        		destination = l;
+        	}
+        	
+        	heap.insert((Comparable) l);
         }
+
         
-        // Initialize the first node
-        Node currentNode = data.getOrigin();
-        nodeLabels[currentNode.getId()].setCost(0);
-        nodeLabels[currentNode.getId()].setFather(null);
-        nodeLabels[currentNode.getId()].setMarked();
-        notifyNodeMarked(data.getOrigin());
-        
-        
+        Node currentNode = null;
         Node nextNode = null;
+        
+        Label next;
         // Continue loop while the destination isn't reached
-        while(!nodeLabels[data.getDestination().getId()].isMarked()) {	
+        while(!destination.isMarked()) {
+        	
+        	//Choose the node with the lower cost
+        	next = (Label) heap.deleteMin();
+        	next.setMarked();
+        	//Define it as process node
+        	currentNode = next.getNode();
+        	notifyNodeMarked(currentNode);
+
+        	if(next == destination) {
+				System.out.println("dst: cout = " + next.getCost() +" hasFather="+(destination.getFather() != null));
+			}
+        	
         	for(Arc a: currentNode.getSuccessors()) {
         		//Calculate the cost
+        		
+        		System.out.println(next.getCost());
         		int id = a.getDestination().getId();
         		double cost = nodeLabels[currentNode.getId()].getCost() + a.getMinimumTravelTime();
-        		System.out.println(cost);
         		
+        		System.out.println(cost +" > "+nodeLabels[id].getCost());
         		//Test if it's going to be better to choose this path
         		if( nodeLabels[id].getCost() > cost) {
         			// Notify that the node is reached if it's the first time it's processed
@@ -55,36 +81,15 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         			}
         			//Set the code and the father
         			nodeLabels[id].setCost(cost);
-        			nodeLabels[id].setFather(a);
-        			
-        			System.out.println(id+": cout"+nodeLabels[id].getCost());
+        			//heap.arraySet(id,nodeLabels[id]);
+        			nodeLabels[id].setFather(a);       			
         		}
-        	}
-        	
-        	//Choose the node with the lower cost
-        	double minLabelCost = Double.POSITIVE_INFINITY;
-        	int indexNextNode = -1;
-        	for(int i = 0; i < nbNodes;i++) {
-        		if(nodeLabels[i].getCost() < minLabelCost && !nodeLabels[i].isMarked() ) {
-        			minLabelCost = nodeLabels[i].getCost();
-        			indexNextNode = i;
-        		}
-        	}
-        	if (indexNextNode != -1) {
-            	nextNode = data.getGraph().getNodes().get(indexNextNode);
-            	nodeLabels[indexNextNode].setMarked();
-            	notifyNodeMarked(nextNode);
-            	
-            	currentNode = nextNode;
-          	}else {
-          		System.out.println("Problème de gestion du noeud suivant");
-        		return new ShortestPathSolution(data, Status.INFEASIBLE);
         	}
         	
         }
         
         //Give the solution
-        if (nodeLabels[data.getDestination().getId()].getFather() == null) {
+        if (destination.getFather() == null) {
             solution = new ShortestPathSolution(data, Status.INFEASIBLE);
         }
         else {
@@ -106,6 +111,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
         }
 
+      //  solution = new ShortestPathSolution(data, Status.INFEASIBLE);
         return solution;
     }
 
