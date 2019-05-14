@@ -53,26 +53,26 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         Label next;
         // Continue loop while the destination isn't reached
         while(!destination.isMarked()) {
-        	
+        	heap.update();
+        	heap.printSorted();
         	//Choose the node with the lower cost
         	next = (Label) heap.deleteMin();
         	next.setMarked();
+
         	//Define it as process node
         	currentNode = next.getNode();
         	notifyNodeMarked(currentNode);
-
+        		System.out.println("Nœud "+currentNode.getId()+": cout = " + next.getCost());
         	if(next == destination) {
 				System.out.println("dst: cout = " + next.getCost() +" hasFather="+(destination.getFather() != null));
 			}
-        	
+
         	for(Arc a: currentNode.getSuccessors()) {
         		//Calculate the cost
-        		
-        		System.out.println(next.getCost());
         		int id = a.getDestination().getId();
         		double cost = nodeLabels[currentNode.getId()].getCost() + a.getMinimumTravelTime();
         		
-        		System.out.println(cost +" > "+nodeLabels[id].getCost());
+        		System.out.println(id+":"+cost +" > "+nodeLabels[id].getCost());
         		//Test if it's going to be better to choose this path
         		if( nodeLabels[id].getCost() > cost) {
         			// Notify that the node is reached if it's the first time it's processed
@@ -82,10 +82,13 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         			//Set the code and the father
         			nodeLabels[id].setCost(cost);
         			//heap.arraySet(id,nodeLabels[id]);
-        			nodeLabels[id].setFather(a);       			
+        			nodeLabels[id].setFather(a);
+        			
+        			System.out.println("nouvelle valeur: "+next.getCost());
         		}
         	}
         	
+        	System.out.print("\n\n");
         }
         
         //Give the solution

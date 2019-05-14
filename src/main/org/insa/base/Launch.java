@@ -52,13 +52,14 @@ public class Launch {
     public static void main(String[] args) throws Exception {
 
         // Visit these directory to see the list of available files on Commetud.
-    	 String mapName = "/home/gaumart/Bureau/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr";
+    	/*
+    	String mapName = "/home/gaumart/Bureau/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr";
         String pathName = "/home/gaumart/Bureau/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Paths/path_fr31insa_rangueil_r2.path";
-
-        /*
+*/
+        
         String mapName = "/home/corentin/Téléchargements/carre.mapgr";
         String pathName = "/home/corentin/Documents/Travail/3IR/BE Graphe/commetud/path_fr31insa_rangueil_insa.path";
-       */  
+       
         
         // Create a graph reader.
         GraphReader reader = new BinaryGraphReader(
@@ -73,17 +74,17 @@ public class Launch {
         // TODO: Draw the graph on the drawing.
         drawing.drawGraph(graph);
         // TODO: Create a PathReader.
-        PathReader pathReader =  new BinaryPathReader(
+        /*PathReader pathReader =  new BinaryPathReader(
                 new DataInputStream(new BufferedInputStream(new FileInputStream(pathName))));
-
+*/
         // TODO: Read the path.
-        Path path = pathReader.readPath(graph);
+        //Path path = pathReader.readPath(graph);
         /*
         ShortestPathData data = new ShortestPathData(graph, graph.getNodes()[0], graph.getNodes()[7], ArcInspector arcInspector);
         ShortestPathAlgorithm spa = new BellmanFordAlgorithm(data);
         */
         // TODO: Draw the path.
-        drawing.drawPath(path);
+     //   drawing.drawPath(path);
     }
 
 }

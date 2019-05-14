@@ -52,4 +52,8 @@ public class Label implements Comparable<Label> {
 		// TODO Auto-generated method stub
 		return this.sommet_courant;
 	}
+	
+	public String toString() {
+		return "Noeud"+this.getNode().getId()+" : "+this.cout+" hasFather= "+(this.getFather() != null);
+	}
 }
