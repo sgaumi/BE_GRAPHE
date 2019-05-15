@@ -27,9 +27,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         Graph graph = data.getGraph();
         
         //Create a list of labels associated to each nodes
-//        Label[] nodeLabels = new Label[graph.getNodes().size()];
-        ArrayList<Label> nodeLabels = new ArrayList<Label>();
         //Labels will be added when it would be used and the it's null
+        Label[] nodeLabels = new Label[graph.getNodes().size()];
         
      // Initialize array of predecessors.
         Arc[] predecessorArcs = new Arc[graph.getNodes().size()];
@@ -40,17 +39,16 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         //Create of the first label
         Label first = new Label(data.getOrigin());
         first.setCost(0);
-        nodeLabels.add(first);
+        nodeLabels[data.getOrigin().getId()] = first;
         heap.insert(first);
         
         //Define the destination
         Label destination = new Label(data.getDestination());
-        nodeLabels.add(destination);
+        nodeLabels[data.getDestination().getId()] = destination;
         heap.insert(destination);
-        
-        int iterations = 0;
-        while(!destination.isMarked() && iterations < graph.getNodes().size()) {
 
+        while(!destination.isMarked()) {
+        	//System.out.println(destination);
         	//Sort the heap
         	heap.update();
         	//Choose the cheaper node
@@ -70,32 +68,28 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         		
         		//Check existence of an object with the destination node
         		boolean exist = false;
-        		Label nextNodeLabel = null;
-        		for(Label l: nodeLabels) {
-        			exist = (l.getNode().getId() == nextNodeId);
-        			if(exist) {
-        				nextNodeLabel = l;
-        				break;
-        			}
-        		}
+
+        		exist = (predecessorArcs[nextNodeId] != null);
         		
-        		if(!exist) { //Insert the label because it's inexistent
+        		if(!exist && nextNodeId != data.getDestination().getId() && nextNodeId != data.getOrigin().getId()) { //Insert the label because it's inexistent
         			Node node = graph.getNodes().get(a.getDestination().getId());
         			Label l = new Label(node);
         			l.setCost(cost);
         			l.setFather(a);
-        			nodeLabels.add(l);
+        			nodeLabels[nextNodeId] = l;
         			heap.insert(l);
         			predecessorArcs[nextNodeId] = a;
         		}else { //Update the label
-        			if(nextNodeLabel.getCost() > cost) {
-        				nextNodeLabel.setCost(cost);
-        				nextNodeLabel.setFather(a);
+        			//System.out.println( nodeLabels[nextNodeId] == destination );
+        			if(nodeLabels[nextNodeId].getCost() > cost) {
+        				nodeLabels[nextNodeId].setCost(cost);
+        				nodeLabels[nextNodeId].setFather(a);
         		        predecessorArcs[nextNodeId] = a;
         			}
         		}
         	}
         }
+
         
         //Give the solution
         if (destination.getFather() == null) {
@@ -108,6 +102,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
          // Create the path from the array of predecessors...
             ArrayList<Arc> arcs = new ArrayList<>();
             Arc arc = destination.getFather();
+
             while (arc != null) {
                 arcs.add(arc);
                 arc = predecessorArcs[arc.getOrigin().getId()];
