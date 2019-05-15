@@ -54,6 +54,8 @@ public class Label implements Comparable<Label> {
 	}
 	
 	public String toString() {
-		return "Noeud"+this.getNode().getId()+" : "+this.cout+" hasFather= "+(this.getFather() != null);
+		String str = "Noeud"+this.getNode().getId()+" : "+this.cout+" hasFather= "+(this.getFather() != null)+" ";
+		if(this.getFather() != null) str += "(Nœud"+this.getFather().getOrigin().getId()+")";
+		return str;
 	}
 }

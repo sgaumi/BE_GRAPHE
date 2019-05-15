@@ -22,73 +22,79 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     protected ShortestPathSolution doRun() {
         ShortestPathData data = getInputData();
         ShortestPathSolution solution = null;
+       
+        //Informations about the graph
         Graph graph = data.getGraph();
         
-        final int nbNodes = graph.size();
+        //Create a list of labels associated to each nodes
+//        Label[] nodeLabels = new Label[graph.getNodes().size()];
+        ArrayList<Label> nodeLabels = new ArrayList<Label>();
+        //Labels will be added when it would be used and the it's null
         
-        //Initialization
-        Label[] nodeLabels = new Label[nbNodes];
+     // Initialize array of predecessors.
+        Arc[] predecessorArcs = new Arc[graph.getNodes().size()];
         
-        BinaryHeap heap = new BinaryHeap();
-        Label destination = null;
-        System.out.println("Initialisation...");
-        for(int i = 0; i < nbNodes; i++) {
-        	Label l = new Label(data.getGraph().getNodes().get(i));
-        	nodeLabels[i] = l;
-        	// Initialize the first node
-        	if( i == data.getOrigin().getId() ) {
-        		l.setCost(0);
-        	}
-        	if(i == data.getDestination().getId()){
-        		destination = l;
-        	}
-        	
-        	heap.insert((Comparable) l);
-        }
+        //Create an heap
+        BinaryHeap<Label> heap = new BinaryHeap<Label>();
+        
+        //Create of the first label
+        Label first = new Label(data.getOrigin());
+        first.setCost(0);
+        nodeLabels.add(first);
+        heap.insert(first);
+        
+        //Define the destination
+        Label destination = new Label(data.getDestination());
+        nodeLabels.add(destination);
+        heap.insert(destination);
+        
+        int iterations = 0;
+        while(!destination.isMarked() && iterations < graph.getNodes().size()) {
 
-        
-        Node currentNode = null;
-        Node nextNode = null;
-        
-        Label next;
-        // Continue loop while the destination isn't reached
-        while(!destination.isMarked()) {
+        	//Sort the heap
         	heap.update();
-        	heap.printSorted();
-        	//Choose the node with the lower cost
-        	next = (Label) heap.deleteMin();
-        	next.setMarked();
+        	//Choose the cheaper node
+        	Label currentLabel = heap.deleteMin();
+        	//Mark as processed node
+        	currentLabel.setMarked();
+        	notifyNodeMarked(currentLabel.getNode());
 
-        	//Define it as process node
-        	currentNode = next.getNode();
-        	notifyNodeMarked(currentNode);
-        		System.out.println("Nœud "+currentNode.getId()+": cout = " + next.getCost());
-        	if(next == destination) {
-				System.out.println("dst: cout = " + next.getCost() +" hasFather="+(destination.getFather() != null));
-			}
-
-        	for(Arc a: currentNode.getSuccessors()) {
-        		//Calculate the cost
-        		int id = a.getDestination().getId();
-        		double cost = nodeLabels[currentNode.getId()].getCost() + a.getMinimumTravelTime();
+        	//System.out.println("using node"+currentLabel.getNode().getId());
+        	//Browse each arc of the node
+        	for(Arc a: currentLabel.getNode().getSuccessors()) {
+        		//Check if the node exist
+        		int nextNodeId = a.getDestination().getId();
         		
-        		System.out.println(id+":"+cost +" > "+nodeLabels[id].getCost());
-        		//Test if it's going to be better to choose this path
-        		if( nodeLabels[id].getCost() > cost) {
-        			// Notify that the node is reached if it's the first time it's processed
-        			if(Double.isInfinite(nodeLabels[id].getCost())) {
-        				notifyNodeReached(a.getDestination());
+        		//Calculate the cost
+        		double cost = currentLabel.getCost() + a.getMinimumTravelTime();
+        		
+        		//Check existence of an object with the destination node
+        		boolean exist = false;
+        		Label nextNodeLabel = null;
+        		for(Label l: nodeLabels) {
+        			exist = (l.getNode().getId() == nextNodeId);
+        			if(exist) {
+        				nextNodeLabel = l;
+        				break;
         			}
-        			//Set the code and the father
-        			nodeLabels[id].setCost(cost);
-        			//heap.arraySet(id,nodeLabels[id]);
-        			nodeLabels[id].setFather(a);
-        			
-        			System.out.println("nouvelle valeur: "+next.getCost());
+        		}
+        		
+        		if(!exist) { //Insert the label because it's inexistent
+        			Node node = graph.getNodes().get(a.getDestination().getId());
+        			Label l = new Label(node);
+        			l.setCost(cost);
+        			l.setFather(a);
+        			nodeLabels.add(l);
+        			heap.insert(l);
+        			predecessorArcs[nextNodeId] = a;
+        		}else { //Update the label
+        			if(nextNodeLabel.getCost() > cost) {
+        				nextNodeLabel.setCost(cost);
+        				nextNodeLabel.setFather(a);
+        		        predecessorArcs[nextNodeId] = a;
+        			}
         		}
         	}
-        	
-        	System.out.print("\n\n");
         }
         
         //Give the solution
@@ -101,10 +107,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             
          // Create the path from the array of predecessors...
             ArrayList<Arc> arcs = new ArrayList<>();
-            Arc arc = nodeLabels[data.getDestination().getId()].getFather();
+            Arc arc = destination.getFather();
             while (arc != null) {
                 arcs.add(arc);
-                arc = nodeLabels[arc.getOrigin().getId()].getFather();
+                arc = predecessorArcs[arc.getOrigin().getId()];
             }
 
             // Reverse the path...
@@ -113,8 +119,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             // Create the final solution.
             solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
         }
-
-      //  solution = new ShortestPathSolution(data, Status.INFEASIBLE);
+                
         return solution;
     }
 
