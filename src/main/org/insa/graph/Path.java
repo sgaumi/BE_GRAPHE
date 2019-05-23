@@ -205,7 +205,6 @@ public class Path {
      * @param node Single node of the path.
      */
     public Path(Graph graph, Node node) {
-    	System.out.println("Nouveau Path "+node);
         this.graph = graph;
         this.origin = node;
         this.arcs = new ArrayList<>();

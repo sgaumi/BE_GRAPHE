@@ -1,12 +1,10 @@
 package org.insa.algo.shortestpath;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.insa.algo.AbstractSolution.Status;
 import org.insa.algo.utils.BinaryHeap;
-import org.insa.algo.utils.PriorityQueue;
 import org.insa.graph.Arc;
 import org.insa.graph.Graph;
 import org.insa.graph.Node;
@@ -45,79 +43,86 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         first.setCost(0);
         nodeLabels[data.getOrigin().getId()] = first;
         heap.insert(first);
-        
-        //Define the destination
-        Label destination = new Label(data.getDestination());
-        nodeLabels[data.getDestination().getId()] = destination;
-        heap.insert(destination);
 
-        while(!destination.isMarked()) {
-        	//heap.print();
-        	//System.out.println(destination);
-        	//Sort the heap
-        	heap.update();
-        	//Choose the cheaper node
-        	Label currentLabel = heap.deleteMin();
-        	//Mark as processed node
-        	currentLabel.setMarked();
-        	notifyNodeMarked(currentLabel.getNode());
 
-        	//System.out.println("using node"+currentLabel.getNode().getId());
-        	//Browse each arc of the node
-        	for(Arc a: currentLabel.getNode().getSuccessors()) {
-        		//Check if the node exist
-        		int nextNodeId = a.getDestination().getId();
-        		
-        		//Calculate the cost
-        		double cost = currentLabel.getCost() + a.getMinimumTravelTime();
-        		
-        		//Check existence of an object with the destination node
-        		boolean exist = false;
-
-        		exist = (predecessorArcs[nextNodeId] != null);
-        		
-        		if(!exist && nextNodeId != data.getDestination().getId() && nextNodeId != data.getOrigin().getId()) { //Insert the label because it's inexistent
-        			Node node = graph.getNodes().get(a.getDestination().getId());
-        			Label l = new Label(node);
-        			l.setCost(cost);
-        			l.setFather(a);
-        			nodeLabels[nextNodeId] = l;
-        			heap.insert(l);
-        			predecessorArcs[nextNodeId] = a;
-        		}else { //Update the label
-        			//System.out.println( nodeLabels[nextNodeId] == destination );
-        			if(nodeLabels[nextNodeId].getCost() > cost) {
-        				nodeLabels[nextNodeId].setCost(cost);
-        				nodeLabels[nextNodeId].setFather(a);
-        		        predecessorArcs[nextNodeId] = a;
-        			}
-        		}
-        	}
+        if(data.getOrigin() == null) {
+        	solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph));
         }
-
-        
-        //Give the solution
-        if (destination.getFather() == null) {
-            solution = new ShortestPathSolution(data, Status.INFEASIBLE);
+        else if(data.getOrigin().equals(data.getDestination())){
+        	solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, data.getOrigin()));
         }
         else {
-        	 // The destination has been found, notify the observers.
-            notifyDestinationReached(data.getDestination());
-            
-         // Create the path from the array of predecessors...
-            ArrayList<Arc> arcs = new ArrayList<>();
-            Arc arc = destination.getFather();
+        	boolean reached = false;
+	        while(!heap.isEmpty() && !reached) {
+	        	if (nodeLabels[data.getDestination().getId()] != null && nodeLabels[data.getDestination().getId()].isMarked()) {
+	        		reached = true;
+	        	}
+	        	//Sort the heap
+	        	heap.update();
+	        	//Choose the cheaper node
+	        	Label currentLabel = heap.deleteMin();
+	        	//Mark as processed node
+	        	currentLabel.setMarked();
+	        	notifyNodeMarked(currentLabel.getNode());
 
-            while (arc != null) {
-                arcs.add(arc);
-                arc = predecessorArcs[arc.getOrigin().getId()];
-            }
-
-            // Reverse the path...
-            Collections.reverse(arcs);
-
-            // Create the final solution.
-            solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
+	        	//Browse each arc of the node
+	        	for(Arc a: currentLabel.getNode().getSuccessors()) {
+	        		//Check if the node exist
+	        		int nextNodeId = a.getDestination().getId();
+	        		
+	        		//Calculate the cost
+	        		double cost = currentLabel.getCost() + a.getMinimumTravelTime();
+	        		
+	        		//Check existence of an object with the destination node
+	        		boolean exist = false;
+	
+	        		exist = (predecessorArcs[nextNodeId] != null);
+	        		
+	        		if(!exist && nextNodeId != data.getOrigin().getId()) { //Insert the label because it's inexistent
+	        			Node node = graph.getNodes().get(a.getDestination().getId());
+	        			Label l = new Label(node);
+	        			l.setCost(cost);
+	        			l.setFather(a);
+	        			nodeLabels[nextNodeId] = l;
+	        			heap.insert(l);
+	        			predecessorArcs[nextNodeId] = a;
+	        		}else { //Update the label
+	        			if(nodeLabels[nextNodeId].getCost() > cost) {
+	        				nodeLabels[nextNodeId].setCost(cost);
+	        				nodeLabels[nextNodeId].setFather(a);
+	        		        predecessorArcs[nextNodeId] = a;
+	        			}
+	        		}
+	        	}
+	        }
+	        Label destination = nodeLabels[data.getDestination().getId()];
+	        System.out.println("dst marked="+destination.isMarked());
+        
+	        //Give the solution
+	        if (!destination.isMarked()) {
+	            solution = new ShortestPathSolution(data, Status.INFEASIBLE);
+	        }
+	        else {
+	        	System.out.print("Djk algo dest father="+destination.getFather()+" <== ");
+	        	System.out.println(destination.getFather().getDestination() == destination.getNode());
+	        	 // The destination has been found, notify the observers.
+	            notifyDestinationReached(data.getDestination());
+	            
+	         // Create the path from the array of predecessors...
+	            ArrayList<Arc> arcs = new ArrayList<>();
+	            Arc arc = destination.getFather();
+	
+	            while (arc != null) {
+	                arcs.add(arc);
+	                arc = predecessorArcs[arc.getOrigin().getId()];
+	            }
+	
+	            // Reverse the path...
+	            Collections.reverse(arcs);
+	
+	            // Create the final solution.
+	            solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
+	        }
         }
                 
         return solution;
