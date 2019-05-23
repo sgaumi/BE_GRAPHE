@@ -18,6 +18,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         super(data);
     }
 
+    
+    /*protected label createLabel(noeud) {
+    	
+    }*/
     @Override
     protected ShortestPathSolution doRun() {
         ShortestPathData data = getInputData();
@@ -48,6 +52,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         heap.insert(destination);
 
         while(!destination.isMarked()) {
+        	//heap.print();
         	//System.out.println(destination);
         	//Sort the heap
         	heap.update();
