@@ -11,7 +11,7 @@ public class Label implements Comparable<Label> {
 	
 	private boolean marque = false;
 	
-	private double cout = Double.POSITIVE_INFINITY;
+	protected double cout = Double.POSITIVE_INFINITY;
 	
 	private Arc pere;
 	
@@ -38,6 +38,11 @@ public class Label implements Comparable<Label> {
 	public double getCost() {
 		return this.cout;
 	}
+	
+	//à redéfinir dans LabelStar pour A*
+	public double getTotalCost() {
+		return this.cout;
+	}
 
 	public Arc getFather() {
 		// TODO Auto-generated method stub
@@ -45,7 +50,7 @@ public class Label implements Comparable<Label> {
 	}
 	
     public int compareTo(Label other) {
-        return Double.compare(this.cout, other.cout);
+        return Double.compare(this.getTotalCost(), other.getTotalCost());
     }
 
 	public Node getNode() {

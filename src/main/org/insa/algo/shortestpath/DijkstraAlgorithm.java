@@ -16,6 +16,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         super(data);
     }
 
+    
+    /*protected label createLabel(noeud) {
+    	
+    }*/
     @Override
     protected ShortestPathSolution doRun() {
         ShortestPathData data = getInputData();
@@ -39,6 +43,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         first.setCost(0);
         nodeLabels[data.getOrigin().getId()] = first;
         heap.insert(first);
+
 
         if(data.getOrigin() == null) {
         	solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph));
