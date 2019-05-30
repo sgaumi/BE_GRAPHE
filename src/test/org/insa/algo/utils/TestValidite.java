@@ -22,6 +22,8 @@ import javax.swing.SwingUtilities;
 
 import org.insa.algo.ArcInspector;
 import org.insa.algo.ArcInspectorFactory;
+import org.insa.algo.shortestpath.AStarAlgorithm;
+import org.insa.algo.shortestpath.BellmanFordAlgorithm;
 import org.insa.algo.shortestpath.DijkstraAlgorithm;
 import org.insa.algo.shortestpath.ShortestPathAlgorithm;
 import org.insa.algo.shortestpath.ShortestPathData;
@@ -45,15 +47,16 @@ public class TestValidite {
 	
 	//Chargement des cartes
 	private ArrayList<Graph> graphList = new ArrayList<Graph>();
-
-
+	String[] mapList = {"carre.mapgr","carre-dense.mapgr","toulouse.mapgr","guadeloupe.mapgr"};
+	int[] Nodelist = {5,5,5,5,5,17,63,63,63,63,157890,312456,1608,1608,1608,1608,8890,1608,13716,13716,13716,33229,13716,15808};
+	
+	
 	@Before
 	public void initAll() throws Exception {
 		System.out.println("Chargement des cartes");
 		
 		//Initialisation des graphes
 		String prefix = "/home/corentin/Téléchargements/";
-		String[] mapList = {"carre.mapgr","carre-dense.mapgr","toulouse.mapgr","guadeloupe.mapgr"};
 	//	String[] mapList = {"carre.mapgr"};
         for (String str: mapList) {
         	String mapName = prefix + str;
@@ -66,63 +69,89 @@ public class TestValidite {
         }
 	}
 	
-	public boolean testPath(Graph graph,int origin,int destination,int arcInspectorNumber) {
+	public boolean testPath(Graph graph,int origin,int destination,int arcInspectorNumber,String algorithm) {
 		ArcInspector arcInspector = ArcInspectorFactory.getAllFilters().get(arcInspectorNumber);
         ShortestPathData data = new ShortestPathData(graph, graph.getNodes().get(origin), graph.getNodes().get(destination), arcInspector);
-        ShortestPathAlgorithm spa = new DijkstraAlgorithm(data);
-        System.out.println("rightOrigin"+ (origin == graph.getNodes().get(origin).getId()));
+        ShortestPathAlgorithm spa;
+        switch (algorithm) {
+		        case "dijkstra":
+		        	spa = new DijkstraAlgorithm(data);
+		        	break;
+		        case "bellman":
+		        	spa = new BellmanFordAlgorithm(data);
+		        	break;
+		        case "a*":
+		        	spa = new AStarAlgorithm(data);
+		        	break;
+		        default:
+		        	System.out.println("Unknown type of algorithm");
+		        	return false;
+        }      
         ShortestPathSolution sps = spa.run();
-        System.out.println("pathSize"+sps.getPath().size());
-        return sps.getPath().isValid() && sps.isFeasible();
+      //  System.out.println("pathSize"+sps.getPath().size());
+        return (sps.isFeasible())? sps.getPath().isValid() : false;
 	}
+	
+	public float testLength(Graph graph,int origin,int destination,int arcInspectorNumber,String algorithm) {
+		ArcInspector arcInspector = ArcInspectorFactory.getAllFilters().get(arcInspectorNumber);
+        ShortestPathData data = new ShortestPathData(graph, graph.getNodes().get(origin), graph.getNodes().get(destination), arcInspector);
 
+        ShortestPathAlgorithm spa;
+        switch (algorithm) {
+		        case "dijkstra":
+		        	spa = new DijkstraAlgorithm(data);
+		        	break;
+		        case "bellman":
+		        	spa = new BellmanFordAlgorithm(data);
+		        	break;
+		        case "a*":
+		        	spa = new AStarAlgorithm(data);
+		        	break;
+		        default:
+		        	System.out.println("Unknown type of algorithm");
+		        	return -1;
+        }
+        System.out.println(algorithm);
+        ShortestPathSolution sps = spa.run();
+
+        return (sps.isFeasible()) ? sps.getPath().getLength(): 0;
+	}
+	
 	@Test
 	public void testValidite() {
-		System.out.println("Carte 1: Carré");
-		//Carte 1
-		Graph graph = graphList.get(0);
-		//origin = destination
-		assertEquals(testPath(graph,5,5,0),true);
+		int step = 0;
+		int mapId = 0;
 		
-		////destination accessible
-		assertEquals(testPath(graph,5,17,0),true);
-		
-		/*
-	/////////////Carte 2
-		System.out.println("Carte 2: Carré dense");
-		
-		graph = graphList.get(1);
-		//origin = destination
-		assertEquals(testPath(graph,63,63,0),true);
-		
-		//destination accessible
-		assertEquals(testPath(graph,157890,312456,0),true);
-		
-		
-		
-		/////////////Carte 3 Toulouse
-		System.out.println("Carte 3: Toulouse");
-		
-		graph = graphList.get(2);
-		//origin = destination
-		assertEquals(testPath(graph,1608,1608,0),true);
-		
-		//destination accessible
-		assertEquals(testPath(graph,8890,1608,0),true);
-		
+		for(Graph graph: graphList) {
+			System.out.println("Carte n°"+mapId+": "+mapList[mapId]);
+			for (int i = 0; i<3; i++) {
+				int src = Nodelist[(step*2)];
+				int dst = Nodelist[(step*2)+1];
+				assertEquals(testPath(graph,src,dst,0,"dijkstra"),true);
+				assertEquals(testPath(graph,src,dst,0,"a*"),true);
+				step++;
+			}
+			mapId++;
+		}
 
-		/////////////Carte 4 Guadeloupe
-		System.out.println("Carte 4: La Désirade (Gaudeloupe)");
+	}
+	
+	//@Test
+	public void testOptimalite() {
+		int step = 0;
+		int mapId = 0;
 		
-		graph = graphList.get(2);
-		//origin = destination
-		assertEquals(testPath(graph,13716,13716,0),true);
-		
-		//destination accessible
-		assertEquals(testPath(graph,13716,33229,0),true);
-		
-		//destination inaccessible
-		assertEquals(testPath(graph,13716,15808,0),false);
-*/
+		for(Graph graph: graphList) {
+			System.out.println("Carte n°"+mapId+": "+mapList[mapId]);
+			for (int i = 0; i<3; i++) {
+				int src = Nodelist[(step*2)];
+				int dst = Nodelist[(step*2)+1];
+				float bellmanLength = testLength(graph,src,dst,0,"bellman");
+				assertEquals(Double.compare(testLength(graph,src,dst,0,"dijkstra"),bellmanLength),0);
+				assertEquals(Double.compare(testLength(graph,src,dst,0,"a*"),bellmanLength),0);
+				step++;
+			}
+			mapId++;
+		}
 	}
 }
