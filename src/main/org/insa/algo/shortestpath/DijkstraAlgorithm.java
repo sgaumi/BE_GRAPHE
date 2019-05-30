@@ -79,6 +79,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 	        	//Mark as processed node
 	        	currentLabel.setMarked();
 	        	notifyNodeMarked(currentLabel.getNode());
+	        	
 
 	        	//Browse each arc of the node
 	        	for(Arc a: currentLabel.getNode().getSuccessors()) {
@@ -100,6 +101,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 	        			l.setCost(cost);
 	        			l.setFather(a);
 	        			nodeLabels[nextNodeId] = l;
+	        			notifyNodeReached(node);
 	        			heap.insert(l);
 	        			predecessorArcs[nextNodeId] = a;
 	        		}else { //Update the label
@@ -112,10 +114,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 	        	}
 	        }
 	        Label destination = nodeLabels[data.getDestination().getId()];
-	        System.out.println("dst marked="+destination.isMarked());
+	        if(destination != null) System.out.println("dst marked="+destination.isMarked());
         
 	        //Give the solution
-	        if (!destination.isMarked()) {
+	        if (destination == null || !destination.isMarked()) {
 	            solution = new ShortestPathSolution(data, Status.INFEASIBLE);
 	        }
 	        else {
