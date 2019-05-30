@@ -1,4 +1,28 @@
+
 package org.insa.algo.shortestpath;
+
+import org.insa.graph.Node;
+
+
+public class AStarAlgorithm extends DijkstraAlgorithm {
+
+    public AStarAlgorithm(ShortestPathData data) {
+        super(data);
+    }
+    
+    protected Label[] createLabelTab() {
+    	LabelStar[] Lbl=new LabelStar[graph.getNodes().size()];
+    	Lbl[data.getOrigin().getId()]=new LabelStar(data.getOrigin(),dest);
+    	return Lbl;
+    }
+    
+    protected Label createLabel(Node node) {
+    	return new LabelStar(node,dest);
+    }
+
+}
+
+/**package org.insa.algo.shortestpath;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,7 +51,7 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
         
         //Create a list of labels associated to each nodes
         //Labels will be added when it would be used and the it's null
-        LabelStar[] nodeLabels = new LabelStar[graph.getNodes().size()];
+        Label[] nodeLabels = new LabelStar[graph.getNodes().size()];
         
      // Initialize array of predecessors.
         Arc[] predecessorArcs = new Arc[graph.getNodes().size()];
@@ -36,8 +60,8 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
         BinaryHeap<Label> heap = new BinaryHeap<Label>();
         
         //Create of the first label
-        LabelStar first = new LabelStar(data.getOrigin(),dest);
-        first.setCost(0,false);
+        Label first = new LabelStar(data.getOrigin(),dest);
+        first.setCost(0);
         nodeLabels[data.getOrigin().getId()] = first;
         heap.insert(first);
 
@@ -68,7 +92,7 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
 	        		int nextNodeId = a.getDestination().getId();
 	        		
 	        		//Calculate the cost
-	        		double cost = currentLabel.getTotalCost() + a.getMinimumTravelTime();
+	        		double cost = currentLabel.getCost() + a.getMinimumTravelTime();
 	        		
 	        		//Check existence of an object with the destination node
 	        		boolean exist = false;
@@ -77,22 +101,22 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
 	        		
 	        		if(!exist && nextNodeId != data.getOrigin().getId()) { //Insert the label because it's inexistent
 	        			Node node = graph.getNodes().get(a.getDestination().getId());
-	        			LabelStar l = new LabelStar(node,dest);
-	        			l.setCost(cost,true);
+	        			Label l = new LabelStar(node,dest);
+	        			l.setCost(cost);
 	        			l.setFather(a);
 	        			nodeLabels[nextNodeId] = l;
 	        			heap.insert(l);
 	        			predecessorArcs[nextNodeId] = a;
 	        		}else { //Update the label
-	        			if(nodeLabels[nextNodeId].getTotalCost() > cost) {
-	        				nodeLabels[nextNodeId].setCost(cost,true);
+	        			if(nodeLabels[nextNodeId].getCost() > cost) {
+	        				nodeLabels[nextNodeId].setCost(cost);
 	        				nodeLabels[nextNodeId].setFather(a);
 	        		        predecessorArcs[nextNodeId] = a;
 	        			}
 	        		}
 	        	}
 	        }
-	        LabelStar destination = nodeLabels[data.getDestination().getId()];
+	        Label destination = nodeLabels[data.getDestination().getId()];
 	        System.out.println("dst marked="+destination.isMarked());
         
 	        //Give the solution
@@ -124,7 +148,7 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
                 
         return solution;
     }
-}
+}*/
 
 
 /**package org.insa.algo.shortestpath;

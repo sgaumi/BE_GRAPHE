@@ -14,17 +14,8 @@ public class LabelStar extends Label implements Comparable<Label>{
 	}
 	
 	public double getTotalCost() {
-		double cout_total;
-		cout_total=this.getCost();
-		cout_total=cout_total+cost_to_dest;
-		return cout_total;
+		return (this.cout)+(this.cost_to_dest);
 	}
 	
-	public void setCost(double cost, boolean added) {
-		double result=cost;
-		if (added==true) {
-			result = cost-cost_to_dest;
-		}
-		this.cout=result;
-	}
+	
 }

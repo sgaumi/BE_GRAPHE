@@ -1,3 +1,5 @@
+
+
 package org.insa.algo.shortestpath;
 
 import java.util.ArrayList;
@@ -15,22 +17,34 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     public DijkstraAlgorithm(ShortestPathData data) {
         super(data);
     }
+    
+    ShortestPathData data = getInputData();
+    ShortestPathSolution solution = null;
+    Node dest = data.getDestination();
+   
+    //Informations about the graph
+    Graph graph = data.getGraph();
 
     
-    /*protected label createLabel(noeud) {
-    	
-    }*/
+    protected Label[] createLabelTab() {
+    	Label[] Lbl=new Label[graph.getNodes().size()];
+    	Lbl[data.getOrigin().getId()]=new Label(data.getOrigin());
+    	return Lbl;
+    }
+    
+    protected Label createLabel(Node node) {
+    	return new Label(node);
+    }
+    
     @Override
     protected ShortestPathSolution doRun() {
-        ShortestPathData data = getInputData();
-        ShortestPathSolution solution = null;
-       
-        //Informations about the graph
-        Graph graph = data.getGraph();
+        
+        
         
         //Create a list of labels associated to each nodes
         //Labels will be added when it would be used and the it's null
-        Label[] nodeLabels = new Label[graph.getNodes().size()];
+        //Label[] nodeLabels = new Label[graph.getNodes().size()];				//ICI
+    	Label[] nodeLabels = createLabelTab();
         
      // Initialize array of predecessors.
         Arc[] predecessorArcs = new Arc[graph.getNodes().size()];
@@ -39,9 +53,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         BinaryHeap<Label> heap = new BinaryHeap<Label>();
         
         //Create of the first label
-        Label first = new Label(data.getOrigin());
+        //Label first = new Label(data.getOrigin());																			//ICI
+        Label first=nodeLabels[data.getOrigin().getId()];
         first.setCost(0);
-        nodeLabels[data.getOrigin().getId()] = first;
+        //nodeLabels[data.getOrigin().getId()] = first;
         heap.insert(first);
 
 
@@ -80,7 +95,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 	        		
 	        		if(!exist && nextNodeId != data.getOrigin().getId()) { //Insert the label because it's inexistent
 	        			Node node = graph.getNodes().get(a.getDestination().getId());
-	        			Label l = new Label(node);
+	        			//Label l = new Label(node);																			//ICI
+	        			Label l = createLabel(node);
 	        			l.setCost(cost);
 	        			l.setFather(a);
 	        			nodeLabels[nextNodeId] = l;

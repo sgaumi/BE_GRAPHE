@@ -14,6 +14,7 @@ public class Label implements Comparable<Label> {
 	protected double cout = Double.POSITIVE_INFINITY;
 	
 	private Arc pere;
+	//private Node pere;
 	
 	public Label(Node node) {
 		this.sommet_courant = node;
@@ -48,6 +49,10 @@ public class Label implements Comparable<Label> {
 		// TODO Auto-generated method stub
 		return this.pere;
 	}
+	/*public Node getFather() {
+		// TODO Auto-generated method stub
+		return this.pere;
+	}*/
 	
     public int compareTo(Label other) {
         return Double.compare(this.getTotalCost(), other.getTotalCost());
