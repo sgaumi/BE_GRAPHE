@@ -24,6 +24,11 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
    
     //Informations about the graph
     Graph graph = data.getGraph();
+    
+    //Informations about the resolution
+    int nb_reached_nodes = 0;
+    int nb_marked_nodes = 0;
+    int max_heap_size = 0;
 
     
     protected Label[] createLabelTab() {
@@ -79,6 +84,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 	        	//Mark as processed node
 	        	currentLabel.setMarked();
 	        	notifyNodeMarked(currentLabel.getNode());
+	        	this.nb_marked_nodes++;
 	        	
 
 	        	//Browse each arc of the node
@@ -102,7 +108,9 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 	        			l.setFather(a);
 	        			nodeLabels[nextNodeId] = l;
 	        			notifyNodeReached(node);
+	        			this.nb_reached_nodes++;
 	        			heap.insert(l);
+	        			if(heap.size() > this.max_heap_size) this.max_heap_size = heap.size();
 	        			predecessorArcs[nextNodeId] = a;
 	        		}else { //Update the label
 	        			if(nodeLabels[nextNodeId].getCost() > cost) {
@@ -146,4 +154,16 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         return solution;
     }
 
+    //Informations about the solving of the problem
+    public int getReachedNodes() {
+    	return this.nb_reached_nodes;
+    }
+    
+    public int getMarkedNodes() {
+    	return this.nb_marked_nodes;
+    }
+    
+    public int getMaxHeapSize() {
+    	return this.max_heap_size;
+    }
 }
