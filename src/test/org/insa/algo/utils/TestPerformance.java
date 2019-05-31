@@ -93,9 +93,9 @@ public class TestPerformance {
 		//Initialize the file
 		Date d = new Date();
 		PrintWriter writer = null;
-		String filename = "/home/corentin/"+str.split(".mapg")[0]+"_"+type+"_"+nb_test+"_data";
+		String filename = "/home/corentin/"+str.split(".mapg")[0]+"_"+type+"_"+nb_test+"_data_"+algorithm;
 		try {
-			writer = new PrintWriter(filename+".txt", "UTF-8");
+			writer = new PrintWriter(filename+".csv", "UTF-8");
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -103,7 +103,7 @@ public class TestPerformance {
 		
 		writer.println(str.split(".mapg")[0]); //Name of the map
 		writer.println((type == "distance")?0:1); //Print if it's based on time or distance
-		
+		writer.println("origine destination cout temps explores marques tas");
 		int arcInspectorNumber = (type == "distance")? 0:2;
 		ArcInspector arcInspector = ArcInspectorFactory.getAllFilters().get(arcInspectorNumber);
        
@@ -115,13 +115,10 @@ public class TestPerformance {
 
 			//Code
 			ShortestPathData data = new ShortestPathData(graph, graph.getNodes().get(origin), graph.getNodes().get(destination), arcInspector);
-	        ShortestPathAlgorithm spa;
+			DijkstraAlgorithm spa;
 	        switch (algorithm) {
 			        case "dijkstra":
 			        	spa = new DijkstraAlgorithm(data);
-			        	break;
-			        case "bellman":
-			        	spa = new BellmanFordAlgorithm(data);
 			        	break;
 			        case "astar":
 			        	spa = new AStarAlgorithm(data);
@@ -138,10 +135,14 @@ public class TestPerformance {
 			if(sps.isFeasible()) {
 				writer.print((type == "distance")?sps.getPath().getLength():sps.getPath().getMinimumTravelTime());
 			}else {
-				writer.print("-1");
+				writer.print("");
 			}
-			writer.print(" "+sps.getSolvingTime()+" ");
-//			writer.print();
+			
+			writer.print(" "+sps.getSolvingTime().getNano());
+			writer.print(" "+spa.getReachedNodes());
+			writer.print(" "+spa.getMarkedNodes());
+			writer.print(" "+spa.getMaxHeapSize());
+			///writer.print();
 			writer.print("\n");			
 		}
 		
