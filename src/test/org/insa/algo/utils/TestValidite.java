@@ -57,7 +57,7 @@ public class TestValidite {
 		
 		//Initialisation des graphes
 		String prefix = "/home/corentin/Téléchargements/";
-	//	String[] mapList = {"carre.mapgr"};
+
         for (String str: mapList) {
         	String mapName = prefix + str;
             // Create a graph reader.
@@ -70,8 +70,10 @@ public class TestValidite {
 	}
 	
 	public boolean testPath(Graph graph,int origin,int destination,int arcInspectorNumber,String algorithm) {
+		//Création d'un ShortestPathData
 		ArcInspector arcInspector = ArcInspectorFactory.getAllFilters().get(arcInspectorNumber);
         ShortestPathData data = new ShortestPathData(graph, graph.getNodes().get(origin), graph.getNodes().get(destination), arcInspector);
+        //Définition de l'algorithme utilisé
         ShortestPathAlgorithm spa;
         switch (algorithm) {
 		        case "dijkstra":
@@ -87,8 +89,8 @@ public class TestValidite {
 		        	System.out.println("Unknown type of algorithm");
 		        	return false;
         }      
+        //Exploitation de la solution
         ShortestPathSolution sps = spa.run();
-      //  System.out.println("pathSize"+sps.getPath().size());
         return (sps.isFeasible())? sps.getPath().isValid() : false;
 	}
 	
